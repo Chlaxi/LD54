@@ -24,23 +24,24 @@ public class CharacterMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-  
+
         Move();
         LookDirection();
     }
 
-    void Move(){
+    void Move()
+    {
         Vector3 direction = new Vector3(InputReader.MovementDir.x, 0, InputReader.MovementDir.y);
 
         direction.Normalize();
         float speed = baseSpeed; // Add modifiers
         Vector3 velocity = direction * speed;
         characterController.Move(velocity * Time.deltaTime);
-        Debug.Log(velocity.magnitude);
         anim.SetFloat("Speed", velocity.magnitude);
     }
 
-    Vector3 GetMouseWorldPosition(){
+    Vector3 GetMouseWorldPosition()
+    {
         Vector3 mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
         Ray ray = new Ray(mousePos, cam.transform.forward);
         RaycastHit hit;
@@ -50,21 +51,12 @@ public class CharacterMovement : MonoBehaviour
         return hitPoint;
     }
 
-    void LookDirection(){
-        Vector3 pos = transform.position; 
+    void LookDirection()
+    {
+        Vector3 pos = transform.position;
         pos.y = 0;
         Vector3 direction = GetMouseWorldPosition() - pos;
         direction.Normalize();
         transform.rotation = Quaternion.LookRotation(direction);
-    }
-
-    void OnDrawGizmos(){
-        Vector3 mouseHitPoint = GetMouseWorldPosition();
-        Gizmos.DrawSphere(mouseHitPoint, .5f);
-        Vector3 pos = transform.position; 
-        pos.y = 0;
-        Vector3 direction = mouseHitPoint - pos;
-        direction.Normalize();
-        Gizmos.DrawLine(pos, direction);
     }
 }
