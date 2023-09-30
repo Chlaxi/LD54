@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class CharacterMovement : MonoBehaviour
 {
+    private Camera cam;
     private Animator anim;
     private InputReader InputReader;
     private CharacterController characterController;
@@ -14,6 +15,7 @@ public class CharacterMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        cam = Camera.main;
         characterController = GetComponent<CharacterController>();
         InputReader = GetComponent<InputReader>();
         anim = GetComponent<Animator>();
@@ -22,7 +24,9 @@ public class CharacterMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+  
         Move();
+        LookDirection();
     }
 
     void Move(){
@@ -36,7 +40,31 @@ public class CharacterMovement : MonoBehaviour
         anim.SetFloat("Speed", velocity.magnitude);
     }
 
-    void LookDir(){
-        
+    Vector3 GetMouseWorldPosition(){
+        Vector3 mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
+        Ray ray = new Ray(mousePos, cam.transform.forward);
+        RaycastHit hit;
+        Physics.Raycast(ray, out hit);
+        Vector3 hitPoint = hit.point;
+        hitPoint.y = 0;
+        return hitPoint;
+    }
+
+    void LookDirection(){
+        Vector3 pos = transform.position; 
+        pos.y = 0;
+        Vector3 direction = GetMouseWorldPosition() - pos;
+        direction.Normalize();
+        transform.rotation = Quaternion.LookRotation(direction);
+    }
+
+    void OnDrawGizmos(){
+        Vector3 mouseHitPoint = GetMouseWorldPosition();
+        Gizmos.DrawSphere(mouseHitPoint, .5f);
+        Vector3 pos = transform.position; 
+        pos.y = 0;
+        Vector3 direction = mouseHitPoint - pos;
+        direction.Normalize();
+        Gizmos.DrawLine(pos, direction);
     }
 }
